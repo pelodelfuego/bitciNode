@@ -1,0 +1,21 @@
+{
+  "name": "bitciNode",
+  "version": "0.0.1",
+  "description": "",
+  "main": "bitciNode.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pelodelfuego/bitciNode.git"
+  },
+  "author": "Clément CREPY",
+  "license": "GNU",
+  "bugs": {
+    "url": "https://github.com/pelodelfuego/bitciNode/issues"
+  },
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}
