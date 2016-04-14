@@ -13,13 +13,32 @@ var config = {
 
 app.route('/')
     .get(function(req, res) {
-        console.log('Get')
-        res.send('Get')
+        res.send(config)
+    });
+
+function buildOwnMessage(parser, config, target, action) {
+
+}
+
+function sendOwnMessage(jsonRequest) {
+    console.log(jsonRequest)
+    ownMessage = ''
+    delay = 0
+    if (jsonRequest.type == 'onOff') {
+        ownMessage = buildOwnMessage(own.onOffParser, target, action)
+    }
+
+    //tn.send()
+    //ownResponse
+    return ownMessage
+}
+
+app.route('/')
+    .get(function(req, res) {
+        res.send(config)
     })
     .post(function(req, res) {
-        console.log('Post')
-        console.log(req.body)
-        res.send('Post')
+         res.send(sendOwnMessage(req.body))
     });
 
 app.listen(3000, function () {
