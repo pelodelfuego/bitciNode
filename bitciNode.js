@@ -1,6 +1,7 @@
 
 var express    = require('express')
 var bodyParser = require('body-parser')
+var telnet     = require('telnet-client');
 
 var own        = require('./openWebNetTranslator')
 
@@ -11,26 +12,24 @@ var config = {
     onOff: require('./config/onOff.json')
 };
 
-app.route('/')
-    .get(function(req, res) {
-        res.send(config)
-    });
-
-function buildOwnMessage(parser, config, target, action) {
+function buildOwnMessage(parser, target, action) {
 
 }
 
-function sendOwnMessage(jsonRequest) {
-    console.log(jsonRequest)
-    ownMessage = ''
+function sendOwnMessage(request) {
+    console.log(request)
     delay = 0
-    if (jsonRequest.type == 'onOff') {
-        ownMessage = buildOwnMessage(own.onOffParser, target, action)
-    }
+
+    settimeout(function (request) {
+        if (request.type == 'onOff') {
+            target = '12'
+            ownRequest = buildOwnMessage(own.onOffParser, target, action)
+        }
+    }, delay);
 
     //tn.send()
     //ownResponse
-    return ownMessage
+    return ownRequest
 }
 
 app.route('/')
