@@ -25,31 +25,39 @@ var tnParam = {
 };
 
 function sendOwnMessage(request) {
-    return new Promise(function(resolve, reject) {
+    //setTimeout(function() {
+    //}, request.delay);
         if (request.type == 'combine') {
-            //recursive call
-        }
+            return sendCombinedOwnMessage(request.action)
+        } else {
+            return new Promise(function(resolve, reject) {
 
-        parser = ownMapper[request.type]
+                parser = ownMapper[request.type]
 
-        target = parser.config[request.target]
-        action = request.action
-        ownRequest = parser.buildMethod(target, action)
+                target = parser.config[request.target]
+                action = request.action
+                ownRequest = parser.buildMethod(target, action)
 
-        setTimeout(function() {
-            tnConnection.connect(tnParam).then(function(prompt) {
-                tnConnection.send(ownRequest, {timeout: 250}).then(function(ownResponse) {
-                    resolve(parser.retrieveMethod(ownResponse, request))
+                tnConnection.connect(tnParam).then(function(prompt) {
+                    tnConnection.send(ownRequest, {timeout: 250}).then(function(ownResponse) {
+                        resolve(parser.retrieveMethod(ownResponse, request))
+                    }).catch(function(e) {
+                        reject(Error("fail send: " + e))
+                    })
                 }).catch(function(e) {
-                    reject(Error("fail send: " + e))
+                    reject(Error("fail connect: " + e))
                 })
-            }).catch(function(e) {
-                reject(Error("fail connect: " + e))
-            })
-        }, request.delay);
-    });
+            });
+        }
 }
 
+function sendCombinedOwnMessage(requestList) {
+    return Promise.all(requestList.map(sendOwnMessage)).then(function(results) {
+        console.log(results);
+    }).catch(function(error) {
+        reject(Error("fail combine: " + e))
+    });
+}
 
 app.route('/')
 .get(function(req, res) {
