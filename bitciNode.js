@@ -1,7 +1,7 @@
 
-var express    = require('express')
-var bodyParser = require('body-parser')
-var telnet     = require('telnet-client');
+var express      = require('express')
+var bodyParser   = require('body-parser')
+var telnet       = require('telnet-client');
 var tnConnection = new telnet();
 
 var own        = require('./openWebNetTranslator')
@@ -17,11 +17,10 @@ var ownMapper = {
     'onOff': {config: ownConfig.onOff, buildMethod: own.buildOnOffMsg, retrieveMethod: own.retrieveOnOffMsg}
 }
 
-var tnConfig = {
+var tnParam = {
     host: '192.168.0.63',
     port: 20000,
-    timeout: 1500,
-    shellPrompt: '*#*1##'
+    shellPrompt: '*#*1##',
 };
 
 function sendOwnMessage(request) {
@@ -35,11 +34,10 @@ function sendOwnMessage(request) {
     action = request.action
 
     ownRequest = own.buildOnOffMsg(target, action)
-    console.log('sent: ' + ownRequest);
 
-    tnConnection.connect(tnConfig).then(
+    tnConnection.connect(tnParam).then(
         function(prompt) {
-            tnConnection.send(ownRequest).then(
+            tnConnection.send(ownRequest, {timeout: 250}).then(
                 function(res) {
                     console.log('promises result:', res)
                 })
