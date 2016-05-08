@@ -1,9 +1,9 @@
 
+var ack = '*#*1##'
+var nack = '*#*0##'
 
 module.exports = {
 
-    ack: '*#*1##',
-    nack: '*#*0##',
 
     //ON OFF
     buildOnOffMsg: function(target, action) {
@@ -18,9 +18,16 @@ module.exports = {
         }
     },
 
-    retrieveOnOffMsg: function(ownMsg, ownReq) {
-
-        return ownMsg
+    retrieveOnOffMsg: function(ownMsg, request) {
+        if (ownMsg == nack) {
+            return {status: "ownError", req: request}
+        } else {
+            if (request.action == "state") {
+                return {status: "success", state: ownMsg[3] == "1" ? "on" : "off"}
+            } else {
+                return {status: "success"}
+            }
+        }
     }
 
 };

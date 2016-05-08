@@ -25,27 +25,25 @@ var tnParam = {
 };
 
 function sendOwnMessage(request) {
-    //if (request.type == 'combine') {
-        ////recursive call
-    //}
-
     return new Promise(function(resolve, reject) {
+        if (request.type == 'combine') {
+            //recursive call
+        }
 
         parser = ownMapper[request.type]
 
         target = parser.config[request.target]
         action = request.action
-
         ownRequest = parser.buildMethod(target, action)
 
         tnConnection.connect(tnParam).then(function(prompt) {
             tnConnection.send(ownRequest, {timeout: 250}).then(function(ownResponse) {
-                resolve(parser.retrieveMethod(ownResponse));
-            }).catch(function() {
-                reject(Error("fail send"))
+                resolve(parser.retrieveMethod(ownResponse, request))
+            }).catch(function(e) {
+                reject(Error("fail send: " + e))
             })
-        }).catch(function() {
-            reject(Error("fail connect"))
+        }).catch(function(e) {
+            reject(Error("fail connect: " + e))
         })
     });
 }
@@ -57,7 +55,7 @@ app.route('/')
 })
 .post(function(req, res) {
     sendOwnMessage(req.body).then(function(parsedOwnresponse) {
-        console.log(new Date().toString() + ' - ' + JSON.stringify(req.body) + ' - ' + parsedOwnresponse);
+        console.log(new Date().toString() + ' - ' + JSON.stringify(req.body) + ' - ' + JSON.stringify(parsedOwnresponse));
         res.send(parsedOwnresponse)
     }).catch(function(e) {
         console.log(e)
