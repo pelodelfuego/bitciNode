@@ -2,48 +2,59 @@
 var express    = require('express')
 var bodyParser = require('body-parser')
 var telnet     = require('telnet-client');
+var tnConnection = new telnet();
 
 var own        = require('./openWebNetTranslator')
 
 var app = express()
 app.use(bodyParser.json());
 
-var config = {
+var ownConfig = {
     onOff: require('./config/onOff.json')
 };
 
 var ownMapper = {
-    'onOff': [config.onOff, own.buildOnOffMsg, own.retrieveOnOffMsg]
+    'onOff': {config: ownConfig.onOff, buildMethod: own.buildOnOffMsg, retrieveMethod: own.retrieveOnOffMsg}
 }
+
+var tnConfig = {
+    host: '192.168.0.63',
+    port: 20000,
+    timeout: 1500,
+    shellPrompt: '*#*1##'
+};
 
 function sendOwnMessage(request) {
     if (request.type == 'combine') {
         //recursive call
     }
 
-    localConfig = ownMapper[request.type][0]
-    buildMethod = ownMapper[request.type][1]
-    retrieveMethod = ownMapper[request.type][2]
+    parser = ownMapper[request.type]
 
-    console.log(localConfig);
-    console.log(buildMethod);
-    console.log(retrieveMethod);
-
-
-    target = localConfig[request.target]
+    target = parser.config[request.target]
     action = request.action
 
-    console.log(target);
-
     ownRequest = own.buildOnOffMsg(target, action)
+    console.log('sent: ' + ownRequest);
 
-    //promise with return
+    tnConnection.connect(tnConfig).then(
+        function(prompt) {
+            tnConnection.send(ownRequest).then(
+                function(res) {
+                    console.log('promises result:', res)
+                })
+        },
+        function(error) {
+            console.log('promises reject:', error)
+        });
+
     return ownRequest
 }
 
+
 app.route('/')
 .get(function(req, res) {
-    res.send(config)
+    res.send(ownConfig)
 })
 .post(function(req, res) {
     res.send(sendOwnMessage(req.body))
