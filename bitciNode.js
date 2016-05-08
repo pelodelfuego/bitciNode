@@ -12,34 +12,43 @@ var config = {
     onOff: require('./config/onOff.json')
 };
 
-function buildOwnMessage(parser, target, action) {
-
+var ownMapper = {
+    'onOff': [config.onOff, own.buildOnOffMsg, own.retrieveOnOffMsg]
 }
 
 function sendOwnMessage(request) {
-    console.log(request)
-    delay = 0
+    if (request.type == 'combine') {
+        //recursive call
+    }
 
-    settimeout(function (request) {
-        if (request.type == 'onOff') {
-            target = '12'
-            ownRequest = buildOwnMessage(own.onOffParser, target, action)
-        }
-    }, delay);
+    localConfig = ownMapper[request.type][0]
+    buildMethod = ownMapper[request.type][1]
+    retrieveMethod = ownMapper[request.type][2]
 
-    //tn.send()
-    //ownResponse
+    console.log(localConfig);
+    console.log(buildMethod);
+    console.log(retrieveMethod);
+
+
+    target = localConfig[request.target]
+    action = request.action
+
+    console.log(target);
+
+    ownRequest = own.buildOnOffMsg(target, action)
+
+    //promise with return
     return ownRequest
 }
 
 app.route('/')
-    .get(function(req, res) {
-        res.send(config)
-    })
-    .post(function(req, res) {
-         res.send(sendOwnMessage(req.body))
-    });
+.get(function(req, res) {
+    res.send(config)
+})
+.post(function(req, res) {
+    res.send(sendOwnMessage(req.body))
+});
 
 app.listen(3000, function () {
-  console.log('Start')
+    console.log('Start')
 });
