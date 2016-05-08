@@ -4,7 +4,6 @@ var nack = '*#*0##'
 
 module.exports = {
 
-
     //ON OFF
     buildOnOffMsg: function(target, action) {
         if (action == 'on') {

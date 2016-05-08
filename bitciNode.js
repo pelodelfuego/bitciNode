@@ -36,15 +36,17 @@ function sendOwnMessage(request) {
         action = request.action
         ownRequest = parser.buildMethod(target, action)
 
-        tnConnection.connect(tnParam).then(function(prompt) {
-            tnConnection.send(ownRequest, {timeout: 250}).then(function(ownResponse) {
-                resolve(parser.retrieveMethod(ownResponse, request))
+        setTimeout(function() {
+            tnConnection.connect(tnParam).then(function(prompt) {
+                tnConnection.send(ownRequest, {timeout: 250}).then(function(ownResponse) {
+                    resolve(parser.retrieveMethod(ownResponse, request))
+                }).catch(function(e) {
+                    reject(Error("fail send: " + e))
+                })
             }).catch(function(e) {
-                reject(Error("fail send: " + e))
+                reject(Error("fail connect: " + e))
             })
-        }).catch(function(e) {
-            reject(Error("fail connect: " + e))
-        })
+        }, request.delay);
     });
 }
 
