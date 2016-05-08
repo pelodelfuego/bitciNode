@@ -2,6 +2,9 @@
 
 module.exports = {
 
+    ack: '',
+    nack: '',
+
     //ON OFF
     buildOnOffMsg: function(target, action) {
         if (action == 'on') {
@@ -10,7 +13,7 @@ module.exports = {
         if (action == 'off') {
             return '*1*0*' + target + '##'
         }
-        if (action == 'status') {
+        if (action == 'state') {
             return '*#1*' + target + '##'
         }
     },

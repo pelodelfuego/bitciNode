@@ -33,7 +33,7 @@ function sendOwnMessage(request) {
     target = parser.config[request.target]
     action = request.action
 
-    ownRequest = own.buildOnOffMsg(target, action)
+    ownRequest = parser.buildMethod(target, action)
 
     tnConnection.connect(tnParam).then(
         function(prompt) {
@@ -56,6 +56,16 @@ app.route('/')
 })
 .post(function(req, res) {
     res.send(sendOwnMessage(req.body))
+});
+
+app.route('/papa')
+.get(function(req, res) {
+    res.send("coucou Papa")
+})
+.post(function(req, res) {
+    console.log(req.body)
+    console.log('json reçu: ' + JSON.stringify(req.body))
+    res.send(req.body)
 });
 
 app.listen(3000, function () {
