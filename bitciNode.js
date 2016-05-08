@@ -3,6 +3,7 @@ var express      = require('express')
 var bodyParser   = require('body-parser')
 var telnet       = require('telnet-client');
 var tnConnection = new telnet();
+var Promise = require('promise');
 
 var own        = require('./openWebNetTranslator')
 
@@ -24,29 +25,29 @@ var tnParam = {
 };
 
 function sendOwnMessage(request) {
-    if (request.type == 'combine') {
-        //recursive call
-    }
+    //if (request.type == 'combine') {
+        ////recursive call
+    //}
 
-    parser = ownMapper[request.type]
+    return new Promise(function(resolve, reject) {
 
-    target = parser.config[request.target]
-    action = request.action
+        parser = ownMapper[request.type]
 
-    ownRequest = parser.buildMethod(target, action)
+        target = parser.config[request.target]
+        action = request.action
 
-    tnConnection.connect(tnParam).then(
-        function(prompt) {
-            tnConnection.send(ownRequest, {timeout: 250}).then(
-                function(res) {
-                    console.log('promises result:', res)
-                })
-        },
-        function(error) {
-            console.log('promises reject:', error)
-        });
+        ownRequest = parser.buildMethod(target, action)
 
-    return ownRequest
+        tnConnection.connect(tnParam).then(function(prompt) {
+            tnConnection.send(ownRequest, {timeout: 250}).then(function(ownResponse) {
+                resolve(parser.retrieveMethod(ownResponse));
+            }).catch(function() {
+                reject(Error("fail send"))
+            })
+        }).catch(function() {
+            reject(Error("fail connect"))
+        })
+    });
 }
 
 
@@ -55,7 +56,12 @@ app.route('/')
     res.send(ownConfig)
 })
 .post(function(req, res) {
-    res.send(sendOwnMessage(req.body))
+    sendOwnMessage(req.body).then(function(parsedOwnresponse) {
+        console.log(new Date().toString() + ' - ' + JSON.stringify(req.body) + ' - ' + parsedOwnresponse);
+        res.send(parsedOwnresponse)
+    }).catch(function(e) {
+        console.log(e)
+    })
 });
 
 app.route('/papa')
@@ -63,9 +69,8 @@ app.route('/papa')
     res.send("coucou Papa")
 })
 .post(function(req, res) {
-    console.log(req.body)
-    console.log('json reçu: ' + JSON.stringify(req.body))
-    res.send(req.body)
+    console.log('json reçu: ')
+    res.send("titi")
 });
 
 app.listen(3000, function () {

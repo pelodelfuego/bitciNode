@@ -2,8 +2,8 @@
 
 module.exports = {
 
-    ack: '',
-    nack: '',
+    ack: '*#*1##',
+    nack: '*#*0##',
 
     //ON OFF
     buildOnOffMsg: function(target, action) {
@@ -18,7 +18,8 @@ module.exports = {
         }
     },
 
-    retrieveOnOffMsg: function(ownMsg) {
+    retrieveOnOffMsg: function(ownMsg, ownReq) {
+
         return ownMsg
     }
 
