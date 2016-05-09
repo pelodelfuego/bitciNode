@@ -42,7 +42,7 @@ function sendOwnMessage(request) {
 
             setTimeout(function() {
                 tnConnection.connect(tnParam).then(function(prompt) {
-                    tnConnection.send(ownRequest, {timeout: 250}).then(function(ownResponse) {
+                    tnConnection.send(ownRequest, {timeout: 50}).then(function(ownResponse) {
                         resolve(parser.retrieveMethod(ownResponse, request))
                     }).catch(function(e) {
                         reject(Error("fail send: " + e))
