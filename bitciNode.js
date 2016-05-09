@@ -2,7 +2,6 @@
 var express      = require('express')
 var bodyParser   = require('body-parser')
 var telnet       = require('telnet-client');
-var tnConnection = new telnet();
 var Promise = require('promise');
 
 var own        = require('./openWebNetTranslator')
@@ -40,9 +39,10 @@ function sendOwnMessage(request) {
             var ownRequest = parser.buildMethod(target, action)
             //check action properly built
 
+            var tnConnection = new telnet();
             setTimeout(function() {
                 tnConnection.connect(tnParam).then(function(prompt) {
-                    tnConnection.send(ownRequest, {timeout: 50}).then(function(ownResponse) {
+                    tnConnection.send(ownRequest, {waitfor: "##"}).then(function(ownResponse) {
                         resolve(parser.retrieveMethod(ownResponse, request))
                     }).catch(function(e) {
                         reject(Error("fail send: " + e))
