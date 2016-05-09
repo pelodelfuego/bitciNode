@@ -2,4 +2,5 @@
 
 
 //TODO:
-combine and delay
+combine
+delay on combine

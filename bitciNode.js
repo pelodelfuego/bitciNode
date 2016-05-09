@@ -52,12 +52,8 @@ function sendOwnMessage(request) {
 }
 
 function sendCombinedOwnMessage(requestList) {
-    //console.log(sendOwnMessage(requestList[0]));
-    //console.log(requestList);
-    //console.log(requestList.map(sendOwnMessage));
     return Promise.all(requestList.map(sendOwnMessage)).then(function(results) {
         resolve(results)
-        console.log(results);
     }).catch(function(e) {
         console.log("atat");
         reject(Error("fail combine: " + e))
@@ -75,15 +71,6 @@ app.route('/')
     }).catch(function(e) {
         console.log(e)
     })
-});
-
-app.route('/papa')
-.get(function(req, res) {
-    res.send("coucou Papa")
-})
-.post(function(req, res) {
-    console.log('json reçu: ')
-    res.send("titi")
 });
 
 app.listen(3000, function () {
