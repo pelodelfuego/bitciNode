@@ -1,10 +1,11 @@
 
 var express      = require('express')
+var colors       = require('colors')
 var bodyParser   = require('body-parser')
-var telnet       = require('telnet-client');
-var Promise = require('promise');
+var Promise      = require('promise');
 
-var own        = require('./openWebNetTranslator')
+var telnet       = require('telnet-client');
+var own          = require('./openWebNetTranslator')
 
 var app = express()
 app.use(bodyParser.json());
@@ -30,14 +31,20 @@ function sendOwnMessage(request) {
         return new Promise(function(resolve, reject) {
 
             var parser = ownMapper[request.type]
-            //check parser correct
+            if (parser === undefined) {
+                reject({status: "translateError",summary: "no matching parser"})
+            }
 
             var target = parser.config[request.target]
-            //check target exist
+            if (target === undefined) {
+                reject({status: "bitcinodeError",summary: "no matching target"})
+            }
 
             var action = request.action
             var ownRequest = parser.buildMethod(target, action)
-            //check action properly built
+            if (ownRequest === undefined) {
+                reject({status: "parseError",summary: "no matching action"})
+            }
 
             var tnConnection = new telnet();
             setTimeout(function() {
@@ -45,10 +52,10 @@ function sendOwnMessage(request) {
                     tnConnection.send(ownRequest, {waitfor: "##"}).then(function(ownResponse) {
                         resolve(parser.retrieveMethod(ownResponse, request))
                     }).catch(function(e) {
-                        reject(Error("fail send: " + e))
+                        reject({status: "tnError", summary: "fail send", detail:e})
                     })
                 }).catch(function(e) {
-                    reject(Error("fail connect: " + e))
+                    reject({status: "tnError",summary: "fail connect", detail:e})
                 })
             }, request.delay);
         });
@@ -68,7 +75,8 @@ app.route('/')
         console.log(new Date().toString() + ' - ' + JSON.stringify(req.body) + ' - ' + JSON.stringify(parsedOwnresponse));
         res.send(parsedOwnresponse)
     }).catch(function(e) {
-        console.log(e)
+        e.input = req.body
+        console.error(("\x1b[31m", new Date().toString() + ' - ' + JSON.stringify(e)).red)
         res.send(e)
     })
 });

@@ -19,7 +19,7 @@ module.exports = {
 
     retrieveOnOffMsg: function(ownMsg, request) {
         if (ownMsg == nack) {
-            return {status: "ownError", req: request}
+            return {status: "ownError"}
         } else {
             if (request.action == "state") {
                 return {status: "success", target: request.target, state: ownMsg[3] == "1" ? "on" : "off"}
