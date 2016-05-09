@@ -22,7 +22,7 @@ module.exports = {
             return {status: "ownError", req: request}
         } else {
             if (request.action == "state") {
-                return {status: "success", state: ownMsg[3] == "1" ? "on" : "off"}
+                return {status: "success", target: request.target, state: ownMsg[3] == "1" ? "on" : "off"}
             } else {
                 return {status: "success"}
             }

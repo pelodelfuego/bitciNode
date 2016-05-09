@@ -30,11 +30,15 @@ function sendOwnMessage(request) {
     } else {
         return new Promise(function(resolve, reject) {
 
-            parser = ownMapper[request.type]
+            var parser = ownMapper[request.type]
+            //check parser correct
 
-            target = parser.config[request.target]
-            action = request.action
-            ownRequest = parser.buildMethod(target, action)
+            var target = parser.config[request.target]
+            //check target exist
+
+            var action = request.action
+            var ownRequest = parser.buildMethod(target, action)
+            //check action properly built
 
             setTimeout(function() {
                 tnConnection.connect(tnParam).then(function(prompt) {
@@ -52,12 +56,7 @@ function sendOwnMessage(request) {
 }
 
 function sendCombinedOwnMessage(requestList) {
-    return Promise.all(requestList.map(sendOwnMessage)).then(function(results) {
-        resolve(results)
-    }).catch(function(e) {
-        console.log("atat");
-        reject(Error("fail combine: " + e))
-    });
+    return Promise.all(requestList.map(sendOwnMessage))
 }
 
 app.route('/')
@@ -70,6 +69,7 @@ app.route('/')
         res.send(parsedOwnresponse)
     }).catch(function(e) {
         console.log(e)
+        res.send(e)
     })
 });
 

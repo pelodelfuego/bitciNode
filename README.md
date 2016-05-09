@@ -2,5 +2,4 @@
 
 
 //TODO:
-combine
-delay on combine
+better error handle
