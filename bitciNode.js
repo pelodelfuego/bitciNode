@@ -22,6 +22,7 @@ var tnParam = {
     host: '192.168.0.63',
     port: 20000,
     shellPrompt: '*#*1##',
+    timeout: 5000,
 };
 
 function sendOwnMessage(request) {
@@ -32,18 +33,18 @@ function sendOwnMessage(request) {
 
             var parser = ownMapper[request.type]
             if (parser === undefined) {
-                reject({status: "translateError",summary: "no matching parser"})
+                reject({status: "translateError",summary: "no matching parser", detail: request.type})
             }
 
             var target = parser.config[request.target]
             if (target === undefined) {
-                reject({status: "bitcinodeError",summary: "no matching target"})
+                reject({status: "bitcinodeError",summary: "no matching target", detail: request.target})
             }
 
             var action = request.action
             var ownRequest = parser.buildMethod(target, action)
             if (ownRequest === undefined) {
-                reject({status: "parseError",summary: "no matching action"})
+                reject({status: "parseError",summary: "no matching action", detail: request.action})
             }
 
             var tnConnection = new telnet();
@@ -72,15 +73,15 @@ app.route('/')
 })
 .post(function(req, res) {
     sendOwnMessage(req.body).then(function(parsedOwnresponse) {
-        console.log(new Date().toString() + ' - ' + JSON.stringify(req.body) + ' - ' + JSON.stringify(parsedOwnresponse));
+        console.log((new Date().toString() + ' - ' + JSON.stringify(req.body) + ' - ' + JSON.stringify(parsedOwnresponse)).green)
         res.send(parsedOwnresponse)
     }).catch(function(e) {
         e.input = req.body
-        console.error(("\x1b[31m", new Date().toString() + ' - ' + JSON.stringify(e)).red)
+        console.error((new Date().toString() + ' - ' + JSON.stringify(e)).red)
         res.send(e)
     })
 });
 
 app.listen(3000, function () {
-    console.log('Start')
+    console.log('Start bitciNode on 192.168.0.130:3000\n'.cyan)
 });
