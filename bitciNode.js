@@ -25,19 +25,18 @@ var tnParam = {
 };
 
 function sendOwnMessage(request) {
-    //setTimeout(function() {
-    //}, request.delay);
-        if (request.type == 'combine') {
-            return sendCombinedOwnMessage(request.action)
-        } else {
-            return new Promise(function(resolve, reject) {
+    if (request.type == 'combine') {
+        return sendCombinedOwnMessage(request.action)
+    } else {
+        return new Promise(function(resolve, reject) {
 
-                parser = ownMapper[request.type]
+            parser = ownMapper[request.type]
 
-                target = parser.config[request.target]
-                action = request.action
-                ownRequest = parser.buildMethod(target, action)
+            target = parser.config[request.target]
+            action = request.action
+            ownRequest = parser.buildMethod(target, action)
 
+            setTimeout(function() {
                 tnConnection.connect(tnParam).then(function(prompt) {
                     tnConnection.send(ownRequest, {timeout: 250}).then(function(ownResponse) {
                         resolve(parser.retrieveMethod(ownResponse, request))
@@ -47,14 +46,20 @@ function sendOwnMessage(request) {
                 }).catch(function(e) {
                     reject(Error("fail connect: " + e))
                 })
-            });
-        }
+            }, request.delay);
+        });
+    }
 }
 
 function sendCombinedOwnMessage(requestList) {
+    //console.log(sendOwnMessage(requestList[0]));
+    //console.log(requestList);
+    //console.log(requestList.map(sendOwnMessage));
     return Promise.all(requestList.map(sendOwnMessage)).then(function(results) {
+        resolve(results)
         console.log(results);
-    }).catch(function(error) {
+    }).catch(function(e) {
+        console.log("atat");
         reject(Error("fail combine: " + e))
     });
 }
