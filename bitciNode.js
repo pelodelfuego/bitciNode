@@ -2,20 +2,26 @@
 var express      = require('express')
 var colors       = require('colors')
 var bodyParser   = require('body-parser')
-var Promise      = require('promise');
 
-var telnet       = require('telnet-client');
+var Promise      = require('promise');
+var Telnet       = require('telnet-client');
+
 var ownParser    = require('./openWebNetParser')
 
 var app = express()
 app.use(bodyParser.json());
 
-var ownConfig = {
-    onOff: require('./config/onOff.json')
+var bitcinodeConf = {
+    ownInputConf: {
+        onOff: require('./config/onOff.json')
+    },
+    ownOutputConf: {},
+    rule: require('./config/rule.json'),
+    scenario: require('./config/scenario.json')
 };
 
 var ownMapper = {
-    'onOff': {config: ownConfig.onOff, buildMethod: ownParser.buildOnOffMsg, retrieveMethod: ownParser.retrieveOnOffMsg}
+    'onOff': {ownTargetList: bitcinodeConf.ownInputConf.onOff, buildMethod: ownParser.buildOnOffMsg, retrieveMethod: ownParser.retrieveOnOffMsg}
 }
 
 var tnParam = {
@@ -24,6 +30,10 @@ var tnParam = {
     shellPrompt: '*#*1##',
 };
 
+
+// -------
+// COMMAND
+// -------
 function sendOwnMessage(request) {
     if (request.type == 'combine') {
         return sendCombinedOwnMessage(request.action)
@@ -35,7 +45,7 @@ function sendOwnMessage(request) {
                 reject({status: "parseError",summary: "no matching parser", detail: request.type})
             }
 
-            var target = parser.config[request.target]
+            var target = parser.ownTargetList[request.target]
             if (target === undefined) {
                 reject({status: "parseError",summary: "no matching target", detail: request.target})
             }
@@ -46,7 +56,7 @@ function sendOwnMessage(request) {
                 reject({status: "parseError",summary: "no matching action", detail: request.action})
             }
 
-            var tnConnection = new telnet();
+            var tnConnection = new Telnet();
             setTimeout(function() {
                 tnConnection.connect(tnParam).then(function(prompt) {
                     tnConnection.send(ownRequest, {waitfor: "##"}).then(function(ownResponse) {
@@ -66,9 +76,57 @@ function sendCombinedOwnMessage(requestList) {
     return Promise.all(requestList.map(sendOwnMessage))
 }
 
+
+// ------
+// HELPER
+// ------
+function addLocalStatement(statementFile, statement) {
+    // add scenario or rule to corresponding file and save
+}
+
+function removeLocalStatement(statementFile, statementName) {
+    // remove scenario or rule in corresponding file and save
+}
+
+function loadLocalStatementList(statementFile, statementList) {
+    // replace scenario or rule file
+}
+
+
+// --------
+// SCENARIO
+// --------
+function executeScenario(scenario) {
+    //return promise with evaluated scenario
+}
+
+function getScenario(scenarioName) {
+    //return a scenario if in the pool
+}
+
+// ----
+// RULE
+// ----
+function executeRule(rule) {
+    //add the rule listener
+}
+
+function reloadRuleList() {
+    //unload and then load reaload all rules
+}
+
+
+// ------
+// ROUTES
+// ------
 app.route('/')
 .get(function(req, res) {
-    res.send(ownConfig)
+    res.send(bitcinodeConf)
+});
+
+app.route('/cmd')
+.get(function(req, res) {
+    res.send(bitcinodeConf.ownInputConf)
 })
 .post(function(req, res) {
     sendOwnMessage(req.body).then(function(parsedOwnresponse) {
@@ -76,9 +134,19 @@ app.route('/')
         res.send(parsedOwnresponse)
     }).catch(function(e) {
         e.input = req.body
-        console.error((new Date().toString() + ' - ' + JSON.stringify(e)).red)
+        console.log((new Date().toString() + ' - ' + JSON.stringify(e)).red)
         res.send(e)
     })
+});
+
+app.route('/rule')
+.get(function(req, res) {
+    res.send(bitcinodeConf.rule)
+});
+
+app.route('/scenario')
+.get(function(req, res) {
+    res.send(bitcinodeConf.scenario)
 });
 
 app.listen(3000, function () {
