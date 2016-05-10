@@ -2,4 +2,4 @@
 
 
 //TODO:
-better error handle
+timeout ar waitfor ?

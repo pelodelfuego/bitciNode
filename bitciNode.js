@@ -5,7 +5,7 @@ var bodyParser   = require('body-parser')
 var Promise      = require('promise');
 
 var telnet       = require('telnet-client');
-var own          = require('./openWebNetTranslator')
+var ownParser    = require('./openWebNetParser')
 
 var app = express()
 app.use(bodyParser.json());
@@ -15,7 +15,7 @@ var ownConfig = {
 };
 
 var ownMapper = {
-    'onOff': {config: ownConfig.onOff, buildMethod: own.buildOnOffMsg, retrieveMethod: own.retrieveOnOffMsg}
+    'onOff': {config: ownConfig.onOff, buildMethod: ownParser.buildOnOffMsg, retrieveMethod: ownParser.retrieveOnOffMsg}
 }
 
 var tnParam = {
