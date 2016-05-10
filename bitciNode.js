@@ -22,7 +22,6 @@ var tnParam = {
     host: '192.168.0.63',
     port: 20000,
     shellPrompt: '*#*1##',
-    timeout: 5000,
 };
 
 function sendOwnMessage(request) {
@@ -33,12 +32,12 @@ function sendOwnMessage(request) {
 
             var parser = ownMapper[request.type]
             if (parser === undefined) {
-                reject({status: "translateError",summary: "no matching parser", detail: request.type})
+                reject({status: "parseError",summary: "no matching parser", detail: request.type})
             }
 
             var target = parser.config[request.target]
             if (target === undefined) {
-                reject({status: "bitcinodeError",summary: "no matching target", detail: request.target})
+                reject({status: "parseError",summary: "no matching target", detail: request.target})
             }
 
             var action = request.action
