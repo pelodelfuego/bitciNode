@@ -31,12 +31,14 @@ var tnParam = {
 };
 
 
-// -------
-// COMMAND
-// -------
+// -----------
+// OWN COMMAND
+// -----------
 function sendOwnMessage(request) {
     if (request.type == 'combine') {
-        return sendCombinedOwnMessage(request.action)
+        return sendOwnCombine(request.action)
+    } else if(request.type == 'sequence') {
+        return sendOwnSequence(request.action)
     } else {
         return new Promise(function(resolve, reject) {
 
@@ -72,10 +74,13 @@ function sendOwnMessage(request) {
     }
 }
 
-function sendCombinedOwnMessage(requestList) {
+function sendOwnCombine(requestList) {
     return Promise.all(requestList.map(sendOwnMessage))
 }
 
+function sendOwnSequence(requestList) {
+
+}
 
 // ------
 // HELPER
@@ -96,12 +101,8 @@ function loadLocalStatementList(statementFile, statementList) {
 // --------
 // SCENARIO
 // --------
-function executeScenario(scenario) {
+function executeScenario(scenarioName) {
     //return promise with evaluated scenario
-}
-
-function getScenario(scenarioName) {
-    //return a scenario if in the pool
 }
 
 // ----
