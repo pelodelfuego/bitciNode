@@ -85,15 +85,15 @@ function sendOwnSequence(requestList) {
 // ------
 // HELPER
 // ------
-function addLocalStatement(statementFile, statement) {
+function addLineToFile(file, line) {
     // add scenario or rule to corresponding file and save
 }
 
-function removeLocalStatement(statementFile, statementName) {
+function removeLineFromFile(file, lineId) {
     // remove scenario or rule in corresponding file and save
 }
 
-function loadLocalStatementList(statementFile, statementList) {
+function replaceFile(file, lineList) {
     // replace scenario or rule file
 }
 
@@ -113,7 +113,7 @@ function executeRule(rule) {
 }
 
 function reloadRuleList() {
-    //unload and then load reaload all rules
+    //unload and then reaload all rules
 }
 
 
