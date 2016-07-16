@@ -73,7 +73,24 @@ function sendOwnMessage(request) {
 }
 
 function sendOwnSequence(requestList) {
+    return new Promise(function(resolve, reject) {
+        var lastPromise = requestList[requestList.length - 1]
+        var ownResponseList = []
 
+        var prevPromise = Promise.resolve();
+        requestList.forEach(function(request) {
+            prevPromise = prevPromise.then(function() {
+                return sendOwnMessage(request);
+            }).then(function(ownResponse) {
+                ownResponseList.push(ownResponse)
+                if (request == lastPromise) {
+                    resolve(ownResponseList)
+                }
+            }).catch(function(e) {
+                reject(e);
+            });
+          });
+    });
 }
 
 
