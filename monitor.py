@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 import socket
 import sys
 
@@ -29,10 +30,12 @@ def monitor():
                 raise Exception("Message does not start with '*': "+data)
             msg = data[0:eom+2]     # message is from position 0 until end of ##
             data = data[eom+2:]     # next message starts after ##
-            print (msg)
+            print msg
+            sys.stdout.flush()
     except:
         sock.close()
-        print ("\nSocket connection closed.")
+        print "\nSocket connection closed."
         sys.exit()
 
-monitor()
+if __name__ == "__main__":
+    monitor()

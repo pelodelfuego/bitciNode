@@ -74,7 +74,7 @@ function sendOwnMessage(request) {
 
 function sendOwnSequence(requestList) {
     return new Promise(function(resolve, reject) {
-        var lastPromise = requestList[requestList.length - 1]
+        var lastPromise = requestList[requestList.length-1]
         var ownResponseList = []
 
         var prevPromise = Promise.resolve();
@@ -87,9 +87,9 @@ function sendOwnSequence(requestList) {
                     resolve(ownResponseList)
                 }
             }).catch(function(e) {
-                reject(e);
+                reject({status: "sequenceError",summary: "fail at item: " + ownResponseList.length, detail:e});
             });
-          });
+        });
     });
 }
 
