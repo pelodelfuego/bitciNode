@@ -143,5 +143,9 @@ app.route('/rule')
 });
 
 app.listen(3000, function () {
-    console.log('Start bitciNode on 192.168.0.130:3000\n'.cyan)
+    console.log('Start bitciNode on 192.168.0.130:3000'.cyan)
+
+    require('child_process').spawn('python', ["./ownMonitor.py", tnParam.host, tnParam.port]).stdout.on('data', function(data) {
+        console.log(data.toString().trim().yellow)
+    });
 });

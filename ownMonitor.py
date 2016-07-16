@@ -4,12 +4,7 @@
 import socket
 import sys
 
-gateway_host = "192.168.0.63"       # set here the IP of your gateway
-gateway_port = 20000                # set here the port of your gateway
-
-gateway_addr_port = gateway_host, gateway_port
-
-def monitor():
+def monitor(gateway_addr_port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect(gateway_addr_port)
@@ -34,8 +29,15 @@ def monitor():
             sys.stdout.flush()
     except:
         sock.close()
-        print "\nSocket connection closed."
+        print "Socket connection closed."
         sys.exit()
 
 if __name__ == "__main__":
-    monitor()
+    # gateway_host = "192.168.0.63"       # set here the IP of your gateway
+    # gateway_port = 20000                # set here the port of your gateway
+
+    gateway_host = sys.argv[1]
+    gateway_port = sys.argv[2]
+
+    gateway_addr_port = gateway_host, gateway_port
+    monitor(gateway_addr_port)
