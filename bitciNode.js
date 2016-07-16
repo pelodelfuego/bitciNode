@@ -16,8 +16,7 @@ var bitcinodeConf = {
         onOff: require('./config/onOff.json')
     },
     ownOutputConf: {},
-    rule: require('./config/rule.json'),
-    scenario: require('./config/scenario.json')
+    rule: require('./config/rule.json')
 };
 
 var ownMapper = {
@@ -35,9 +34,8 @@ var tnParam = {
 // OWN COMMAND
 // -----------
 function sendOwnMessage(request) {
-    if (request.type == 'combine') {
-        return sendOwnCombine(request.action)
-    } else if(request.type == 'sequence') {
+    request.delay = 'delay' in request ? request.delay : 0
+    if(request.type == 'sequence') {
         return sendOwnSequence(request.action)
     } else {
         return new Promise(function(resolve, reject) {
@@ -74,36 +72,10 @@ function sendOwnMessage(request) {
     }
 }
 
-function sendOwnCombine(requestList) {
-    return Promise.all(requestList.map(sendOwnMessage))
-}
-
 function sendOwnSequence(requestList) {
 
 }
 
-// ------
-// HELPER
-// ------
-function addLineToFile(file, line) {
-    // add scenario or rule to corresponding file and save
-}
-
-function removeLineFromFile(file, lineId) {
-    // remove scenario or rule in corresponding file and save
-}
-
-function replaceFile(file, lineList) {
-    // replace scenario or rule file
-}
-
-
-// --------
-// SCENARIO
-// --------
-function executeScenario(scenarioName) {
-    //return promise with evaluated scenario
-}
 
 // ----
 // RULE
@@ -143,11 +115,6 @@ app.route('/cmd')
 app.route('/rule')
 .get(function(req, res) {
     res.send(bitcinodeConf.rule)
-});
-
-app.route('/scenario')
-.get(function(req, res) {
-    res.send(bitcinodeConf.scenario)
 });
 
 app.listen(3000, function () {
