@@ -2,6 +2,7 @@
 var express      = require('express')
 var colors       = require('colors')
 var bodyParser   = require('body-parser')
+var childProcess = require('child_process')
 
 var Promise      = require('promise');
 var Telnet       = require('telnet-client');
@@ -15,7 +16,9 @@ var bitcinodeConf = {
     ownInputConf: {
         onOff: require('./config/onOff.json')
     },
-    ownOutputConf: {},
+    ownOutputConf: {
+        motionDetector: require('./config/motionDetector.json')
+    },
     rule: require('./config/rule.json')
 };
 
@@ -127,6 +130,11 @@ app.route('/cmd')
         console.log((new Date().toString() + ' - ' + JSON.stringify(e)).red)
         res.send(e)
     })
+});
+
+app.route('/motionDetector')
+.get(function(req, res) {
+    res.send(bitcinodeConf.ownOutputConf)
 });
 
 app.route('/rule')
