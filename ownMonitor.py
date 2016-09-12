@@ -39,5 +39,5 @@ if __name__ == "__main__":
     gateway_host = sys.argv[1]
     gateway_port = sys.argv[2]
 
-    gateway_addr_port = gateway_host, gateway_port
+    gateway_addr_port = gateway_host, int(gateway_port)
     monitor(gateway_addr_port)
