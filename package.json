@@ -16,6 +16,11 @@
     "url": "https://github.com/pelodelfuego/bitciNode/issues"
   },
   "dependencies": {
-    "express": "^4.13.4"
+    "body-parser": "^1.15.2",
+    "colors": "^1.1.2",
+    "express": "^4.13.4",
+    "node-cron": "^1.1.2",
+    "promise": "^7.1.1",
+    "telnet-client": "^0.10.6"
   }
 }

@@ -6,6 +6,7 @@ var childProcess = require('child_process')
 
 var Promise      = require('promise');
 var Telnet       = require('telnet-client');
+var cron         = require('node-cron');
 
 var ownParser    = require('./openWebNetParser')
 
@@ -19,7 +20,7 @@ var bitcinodeConf = {
     ownOutputConf: {
         motionDetector: require('./config/motionDetector.json')
     },
-    rule: require('./config/rule.json')
+    ruleConf: require('./config/rule.json')
 };
 
 var ownMapper = {
@@ -37,11 +38,11 @@ var tnParam = {
 // OWN COMMAND
 // -----------
 function sendOwnMessage(request) {
-    request.delay = 'delay' in request ? request.delay : 0
     if(request.type == 'sequence') {
         return sendOwnSequence(request.action)
     } else {
         return new Promise(function(resolve, reject) {
+            request.delay = 'delay' in request ? request.delay : 0
 
             var parser = ownMapper[request.type]
             if (parser === undefined) {
@@ -100,12 +101,27 @@ function sendOwnSequence(requestList) {
 // ----
 // RULE
 // ----
-function executeRule(rule) {
-    //add the rule listener
+function executeRule(ruleName) {
+    rule = bitcinodeConf.ruleConf[ruleName]
+    if (rule.type == 'cron') {
+        cron.schedule(rule.trigger, function(){
+            console.log(ruleName);
+            sendOwnMessage(rule.action).then(function(parsedOwnresponse) {
+                console.log((new Date().toString() + ' - ' + JSON.stringify(rule.action) + ' - ' + JSON.stringify(parsedOwnresponse)).blue)
+            }).catch(function(e) {
+                e.input = rule.action
+                console.log((new Date().toString() + ' - ' + JSON.stringify(e)).red)
+            })
+        });
+    }
 }
 
-function reloadRuleList() {
+function reloadRuleConf() {
     //unload and then reaload all rules
+
+    for (var ruleName in bitcinodeConf.ruleConf) {
+        executeRule(ruleName)
+    }
 }
 
 
@@ -144,6 +160,9 @@ app.route('/rule')
 
 app.listen(3000, function () {
     console.log('Start bitciNode on 192.168.0.130:3000'.cyan)
+
+
+    reloadRuleConf()
 
     childProcess.spawn('python', ["./ownMonitor.py", tnParam.host, tnParam.port]).stdout.on('data', function(data) {
         rawEvent = data.toString().trim()
