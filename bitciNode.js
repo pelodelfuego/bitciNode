@@ -129,7 +129,8 @@ app.route('/')
 
 app.route('/cmd')
 .get(function(req, res) {
-    res.send(bitcinodeConf.ownInputConf)
+    //res.send(bitcinodeConf.ownInputConf)
+    res.send({availableAction: ["on", "off", "status"], availableTarget: Object.keys(bitcinodeConf.ownInputConf.onOff)})
 })
 .post(function(req, res) {
     sendOwnMessage(req.body).then(function(parsedOwnresponse) {
