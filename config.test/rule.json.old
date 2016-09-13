@@ -1,0 +1,3 @@
+{
+    "rule 1": {"type": "cron", "trigger": "*/5 * * * * *", "action": {"type":"sequence","action":[{"type":"onOff","target":"Lumière 1","action":"on"}, {"type":"onOff","target":"Lumière 1","action":"off","delay":1000}]}}
+}
