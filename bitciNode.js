@@ -33,6 +33,7 @@ var tnParam = {
     shellPrompt: '*#*1##',
 };
 
+console.log(JSON.stringify(tnParam));
 
 // -----------
 // OWN COMMAND
@@ -106,7 +107,7 @@ function executeRule(ruleName) {
     if (rule.type == 'cron') {
         cron.schedule(rule.trigger, function(){
             sendOwnMessage(rule.action).then(function(parsedOwnresponse) {
-                printLog('RUL', [ruleName, rule, parsedOwnresponse], colors.blue)
+                printLog('RUL', [ruleName, rule, parsedOwnresponse], colors.cyan)
             }).catch(function(e) {
                 e.input = rule.action
                 printLog('ERR', ['rule', ruleName, e], colors.red)
@@ -165,7 +166,7 @@ function printLog(logType, contentArray, colorFmt) {
 }
 
 app.listen(3000, function () {
-    console.log(colors.cyan('Start bitciNode on 192.168.0.130:3000'))
+    console.log('Start bitciNode on 192.168.0.120:3000')
 
     reloadRuleConf()
 
