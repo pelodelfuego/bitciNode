@@ -29,6 +29,7 @@ var ownMapper = {
     'onOff': {ownTargetList: bitcinodeConf.ownInputConf.onOff, buildMethod: ownParser.buildOnOffMsg, retrieveMethod: ownParser.retrieveOnOffMsg}
 }
 
+
 // -----------
 // OWN COMMAND
 // -----------
