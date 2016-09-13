@@ -1,6 +1,6 @@
 
 var express      = require('express')
-var colors       = require('colors')
+var colors       = require('colors/safe')
 var bodyParser   = require('body-parser')
 var childProcess = require('child_process')
 
@@ -102,15 +102,14 @@ function sendOwnSequence(requestList) {
 // RULE
 // ----
 function executeRule(ruleName) {
-    rule = bitcinodeConf.ruleConf[ruleName]
+    var rule = bitcinodeConf.ruleConf[ruleName]
     if (rule.type == 'cron') {
         cron.schedule(rule.trigger, function(){
-            console.log(ruleName);
             sendOwnMessage(rule.action).then(function(parsedOwnresponse) {
-                console.log((new Date().toString() + ' - ' + JSON.stringify(rule.action) + ' - ' + JSON.stringify(parsedOwnresponse)).blue)
+                printLog('RUL', [ruleName, rule, parsedOwnresponse], colors.blue)
             }).catch(function(e) {
                 e.input = rule.action
-                console.log((new Date().toString() + ' - ' + JSON.stringify(e)).red)
+                printLog('ERR', ['rule', ruleName, e], colors.red)
             })
         });
     }
@@ -118,7 +117,6 @@ function executeRule(ruleName) {
 
 function reloadRuleConf() {
     //unload and then reaload all rules
-
     for (var ruleName in bitcinodeConf.ruleConf) {
         executeRule(ruleName)
     }
@@ -139,11 +137,11 @@ app.route('/cmd')
 })
 .post(function(req, res) {
     sendOwnMessage(req.body).then(function(parsedOwnresponse) {
-        console.log((new Date().toString() + ' - ' + JSON.stringify(req.body) + ' - ' + JSON.stringify(parsedOwnresponse)).green)
+        printLog('CMD', [req.body, parsedOwnresponse], colors.green)
         res.send(parsedOwnresponse)
     }).catch(function(e) {
         e.input = req.body
-        console.log((new Date().toString() + ' - ' + JSON.stringify(e)).red)
+        printLog('ERR', ['cmd', e], colors.red)
         res.send(e)
     })
 });
@@ -158,17 +156,25 @@ app.route('/rule')
     res.send(bitcinodeConf.rule)
 });
 
-app.listen(3000, function () {
-    console.log('Start bitciNode on 192.168.0.130:3000'.cyan)
 
+// ------
+// SERVER
+// ------
+function printLog(logType, contentArray, colorFmt) {
+    console.log(colorFmt(new Date().toString() + ' / ' + logType + ': ' + contentArray.map(JSON.stringify).join(' - ')));
+}
+
+app.listen(3000, function () {
+    console.log(colors.cyan('Start bitciNode on 192.168.0.130:3000'))
 
     reloadRuleConf()
 
     childProcess.spawn('python', ["./ownMonitor.py", tnParam.host, tnParam.port]).stdout.on('data', function(data) {
-        rawEvent = data.toString().trim()
-        motionDetectorConf = bitcinodeConf.ownOutputConf.motionDetector
-        eventSource = rawEvent in motionDetectorConf ? motionDetectorConf[rawEvent] : rawEvent
+        var rawEvent = data.toString().trim()
+        printLog('MON', [rawEvent], colors.yellow)
 
-        console.log((new Date().toString() + ' - ' + eventSource).yellow)
+        //motionDetectorConf = bitcinodeConf.ownOutputConf.motionDetector
+        //eventSource = rawEvent in motionDetectorConf ? motionDetectorConf[rawEvent] : rawEvent
+
     });
 });
