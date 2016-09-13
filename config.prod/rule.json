@@ -1,3 +1,0 @@
-{
-    "toto": {"type": "cron", "trigger": "*/5 * * * * *", "action": {"type":"sequence","action":[{"type":"onOff","target":"Eclairage - 1er Et - Bureau - Plafonnier","action":"on"}, {"type":"onOff","target":"Eclairage - 1er Et - Bureau - Plafonnier","action":"off","delay":1000}]}}
-}
