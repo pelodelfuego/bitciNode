@@ -27,15 +27,7 @@ var ownMapper = {
     'onOff': {ownTargetList: bitcinodeConf.ownInputConf.onOff, buildMethod: ownParser.buildOnOffMsg, retrieveMethod: ownParser.retrieveOnOffMsg}
 }
 
-var tnParam = {
-    host: '192.168.0.63',
-    port: 20000,
-    shellPrompt: '*#*1##',
-};
-
-console.log(JSON.stringify(tnParam));
-tnParam = require('./config/telnet.json')
-console.log(JSON.stringify(tnParam));
+var tnParam = require('./config/telnet.json')
 
 // -----------
 // OWN COMMAND
