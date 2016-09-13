@@ -34,6 +34,8 @@ var tnParam = {
 };
 
 console.log(JSON.stringify(tnParam));
+tnParam = require('./config/telnet.json')
+console.log(JSON.stringify(tnParam));
 
 // -----------
 // OWN COMMAND
@@ -166,11 +168,7 @@ function printLog(logType, contentArray, colorFmt) {
 }
 
 app.listen(3000, function () {
-<<<<<<< HEAD
     console.log('Start bitciNode on 192.168.0.120:3000')
-=======
-    console.log(colors.cyan('Start bitciNode on 192.168.0.130:3000'))
->>>>>>> a6f5ba2b6508fe8db0fc99102b7de5e4f84ae0c3
 
     reloadRuleConf()
 
